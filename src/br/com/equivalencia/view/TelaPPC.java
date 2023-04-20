@@ -17,27 +17,28 @@ import net.proteanit.sql.DbUtils;
  *
  * @author asilva
  */
-public class TelaArea extends javax.swing.JFrame {
+public class TelaPPC extends javax.swing.JFrame {
     
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
     
     public void adicionar(){
-        String sql = "insert into area_tecnologica(nome) values (?)";
+        String sql = "insert into ppc(ch,ano) values (?,?)";
         
         try {
             pst = conexao.prepareStatement(sql);
-            pst.setString(1,txtNomeArea.getText());
+            pst.setString(1,txtCargaH.getText());
+            pst.setString(2,txtAno.getText());
             
-            if(txtNomeArea.getText().isEmpty()){
+            if(txtCargaH.getText().isEmpty()){
                 JOptionPane.showMessageDialog(null,"Campo de preechimento obrigatório não foi preenchido.");
             }else{
                 int adicionado = pst.executeUpdate();
                 System.out.println(adicionado);
                 if (adicionado>0){
-                    JOptionPane.showMessageDialog(null,"Área Tecnologica cadastrada com sucesso!.");
-                    txtNomeArea.setText(null);
+                    JOptionPane.showMessageDialog(null,"PPC cadastrado com sucesso!.");
+                    txtCargaH.setText(null);
                 }
                 
             }
@@ -46,7 +47,7 @@ public class TelaArea extends javax.swing.JFrame {
         }
     }
      private void consultar() {
-        String sql = "select id_area as Id, nome as Área from area_tecnologica where nome like ?";
+        String sql = "select id_ppc as 'Id PPC', ch as 'Carga Horaria', ano as ano from ppc where ano like?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -59,16 +60,17 @@ public class TelaArea extends javax.swing.JFrame {
         }
     }
     private void alterar(){
-    String sql="update area_tecnologica set nome=? where id_area=?";
+    String sql="update ppc set ch=?, ano=?  where id_ppc=?";
     
         try {
             pst=conexao.prepareStatement(sql);
             
-            pst.setString(1,txtNomeArea.getText());
-            pst.setString(2,txtIdArea.getText());
+            pst.setString(1,txtCargaH.getText());
+            pst.setString(2,txtAno.getText());
+            pst.setString(3,txtIdPpc.getText());
 
             // validação dos campos obrigatórios
-            if ((txtIdArea.getText().isEmpty()) || (txtNomeArea.getText().isEmpty())) {
+            if ((txtIdPpc.getText().isEmpty()) || (txtCargaH.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Campo de preenchimento obrigatório está em branco!");
 
             } else {
@@ -76,7 +78,7 @@ public class TelaArea extends javax.swing.JFrame {
                 int adicionado = pst.executeUpdate();
                 // a linha abaixo serve de apoio ao entendimento da lógica
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Informações de Área Tecnológica alteradas com sucesso!");
+                    JOptionPane.showMessageDialog(null, "Informações do PPC foram alteradas com sucesso!");
                     // as linhas abaixo limpam os campos para que o usuario possa cadastrar um novo
                     //txtIdArea.setText(null);
                     //txtNomeArea.setText(null);
@@ -89,7 +91,7 @@ public class TelaArea extends javax.swing.JFrame {
         }
     }
     public void excluir(){
-        String sql =  "delete from area_tecnologica where id_area=?" ;
+        String sql =  "delete from ppc where id_ppc=?" ;
         
         int confirm = JOptionPane.showConfirmDialog(null, "Você tem certeza?","Atenção",JOptionPane.YES_NO_OPTION);
         
@@ -97,21 +99,21 @@ public class TelaArea extends javax.swing.JFrame {
             try {
                 
                 pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtIdArea.getText());
+                pst.setString(1, txtIdPpc.getText());
                 
                 int apagado = pst.executeUpdate();
 
                 if(apagado > 0 ){
-                    JOptionPane.showMessageDialog(null, "Area Tecnologica apagada com sucesso.");
-                    txtIdArea.setText(null);
-                    txtNomeArea.setText(null);
+                    JOptionPane.showMessageDialog(null, "PPC apagado com sucesso.");
+                    txtIdPpc.setText(null);
+                    txtCargaH.setText(null);
                     btnAdicionarArea.setEnabled(true);
                     btnExcluirArea.setEnabled(false);
                     btnEditarArea.setEnabled(false);
                     
                 }
             } catch(java.sql.SQLIntegrityConstraintViolationException e){
-                JOptionPane.showMessageDialog(null,"A area não pode ser deletada.\nTente deletar os cursos vinculados a ela antes de apagar a mesma.");
+                JOptionPane.showMessageDialog(null,"O ppc não pode ser deletado.\nTente deletar os cursos vinculados a ele antes de apagar o mesmo.");
             }catch(Exception e1){
                  JOptionPane.showMessageDialog(null, e1);
             }
@@ -120,8 +122,9 @@ public class TelaArea extends javax.swing.JFrame {
     public void setar_campos(){
     tblAreaConsulta.setVisible(true);
     int setar = tblAreaConsulta.getSelectedRow();
-    txtIdArea.setText(tblAreaConsulta.getModel().getValueAt(setar,0).toString());
-    txtNomeArea.setText(tblAreaConsulta.getModel().getValueAt(setar,1).toString());
+    txtIdPpc.setText(tblAreaConsulta.getModel().getValueAt(setar,0).toString());
+    txtCargaH.setText(tblAreaConsulta.getModel().getValueAt(setar,1).toString());
+    txtAno.setText(tblAreaConsulta.getModel().getValueAt(setar,2).toString());
     btnAdicionarArea.setEnabled(false);
     btnEditarArea.setEnabled(true);
     btnExcluirArea.setEnabled(true);
@@ -130,7 +133,7 @@ public class TelaArea extends javax.swing.JFrame {
     /**
      * Creates new form TelaArea
      */
-    public TelaArea() {
+    public TelaPPC() {
         initComponents();
         tblAreaConsulta.setVisible(false);
         Color nova = new Color(0,0,0);
@@ -149,10 +152,12 @@ public class TelaArea extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel5 = new javax.swing.JLabel();
+        jLabel6 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
-        txtIdArea = new javax.swing.JTextField();
+        txtIdPpc = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        txtNomeArea = new javax.swing.JTextField();
+        txtCargaH = new javax.swing.JTextField();
         btnAdicionarArea = new javax.swing.JButton();
         btnEditarArea = new javax.swing.JButton();
         btnVoltar = new javax.swing.JButton();
@@ -161,9 +166,16 @@ public class TelaArea extends javax.swing.JFrame {
         tblAreaConsulta = new javax.swing.JTable();
         txtConsultaArea = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
+        txtAno = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel7 = new javax.swing.JLabel();
+
+        jLabel5.setText("jLabel5");
+
+        jLabel6.setText("jLabel6");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Sistema Equivâlencia - Área Tecnologica");
+        setTitle("Sistema Equivalencia - Tela Area tecnologica");
         setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         setResizable(false);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -171,21 +183,25 @@ public class TelaArea extends javax.swing.JFrame {
                 formWindowClosed(evt);
             }
         });
+        getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("ID:");
+        jLabel1.setText("ID :");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 30, 22));
 
-        txtIdArea.setEditable(false);
-        txtIdArea.setBackground(new java.awt.Color(204, 204, 204));
-        txtIdArea.setEnabled(false);
-        txtIdArea.addActionListener(new java.awt.event.ActionListener() {
+        txtIdPpc.setBackground(new java.awt.Color(204, 204, 204));
+        txtIdPpc.setEnabled(false);
+        txtIdPpc.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdAreaActionPerformed(evt);
+                txtIdPpcActionPerformed(evt);
             }
         });
+        getContentPane().add(txtIdPpc, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 30, 105, 22));
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Nome:");
+        jLabel2.setText("Carga Hr :");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, -1, 22));
+        getContentPane().add(txtCargaH, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 70, 105, 22));
 
         btnAdicionarArea.setBackground(new java.awt.Color(51, 255, 51));
         btnAdicionarArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/add-area-icon.png"))); // NOI18N
@@ -196,6 +212,8 @@ public class TelaArea extends javax.swing.JFrame {
                 btnAdicionarAreaActionPerformed(evt);
             }
         });
+        getContentPane().add(btnAdicionarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, 48, 48));
+        btnAdicionarArea.getAccessibleContext().setAccessibleDescription("");
 
         btnEditarArea.setBackground(new java.awt.Color(255, 255, 51));
         btnEditarArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/editar-area-icon.png"))); // NOI18N
@@ -207,6 +225,8 @@ public class TelaArea extends javax.swing.JFrame {
                 btnEditarAreaActionPerformed(evt);
             }
         });
+        getContentPane().add(btnEditarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 48, 48));
+        btnEditarArea.getAccessibleContext().setAccessibleDescription("");
 
         btnVoltar.setBackground(new java.awt.Color(255, 51, 102));
         btnVoltar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/back.png"))); // NOI18N
@@ -217,6 +237,8 @@ public class TelaArea extends javax.swing.JFrame {
                 btnVoltarActionPerformed(evt);
             }
         });
+        getContentPane().add(btnVoltar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, 48, 48));
+        btnVoltar.getAccessibleContext().setAccessibleDescription("");
 
         btnExcluirArea.setBackground(new java.awt.Color(255, 51, 51));
         btnExcluirArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/exluir-area-icon.png"))); // NOI18N
@@ -228,22 +250,24 @@ public class TelaArea extends javax.swing.JFrame {
                 btnExcluirAreaActionPerformed(evt);
             }
         });
+        getContentPane().add(btnExcluirArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 240, 48, 48));
+        btnExcluirArea.getAccessibleContext().setAccessibleDescription("");
 
         tblAreaConsulta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null},
-                {null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Id Área", "Nome Area"
+                "Id PPc", "Carga Horaria", "Ano"
             }
         ));
         tblAreaConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -252,6 +276,8 @@ public class TelaArea extends javax.swing.JFrame {
             }
         });
         jScrollPane1.setViewportView(tblAreaConsulta);
+
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(218, 59, 300, 230));
 
         txtConsultaArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -268,79 +294,19 @@ public class TelaArea extends javax.swing.JFrame {
                 txtConsultaAreaKeyReleased(evt);
             }
         });
+        getContentPane().add(txtConsultaArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(297, 30, 220, 22));
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Pesquisar:");
+        jLabel3.setText("Pesquisar :");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 80, 22));
+        getContentPane().add(txtAno, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 110, 105, 22));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(54, 54, 54)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnAdicionarArea, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(46, 46, 46)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnEditarArea, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnExcluirArea, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap(35, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel1))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtNomeArea, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtIdArea, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(32, 32, 32)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtConsultaArea, javax.swing.GroupLayout.PREFERRED_SIZE, 163, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(22, 22, 22))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(14, 14, 14)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtConsultaArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                        .addGap(25, 25, 25))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtIdArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtNomeArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel2))
-                        .addGap(38, 38, 38)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnAdicionarArea, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnEditarArea, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnVoltar, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnExcluirArea, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addContainerGap(45, Short.MAX_VALUE))))
-        );
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Ano :");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, 22));
 
-        btnAdicionarArea.getAccessibleContext().setAccessibleDescription("");
-        btnEditarArea.getAccessibleContext().setAccessibleDescription("");
-        btnVoltar.getAccessibleContext().setAccessibleDescription("");
-        btnExcluirArea.getAccessibleContext().setAccessibleDescription("");
+        jLabel7.setText("jLabel7");
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 60, 30, 270));
 
         getAccessibleContext().setAccessibleDescription("");
 
@@ -348,9 +314,9 @@ public class TelaArea extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtIdAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdAreaActionPerformed
+    private void txtIdPpcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdPpcActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdAreaActionPerformed
+    }//GEN-LAST:event_txtIdPpcActionPerformed
 
     private void btnAdicionarAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarAreaActionPerformed
         adicionar();
@@ -377,7 +343,7 @@ public class TelaArea extends javax.swing.JFrame {
         try {
             conexao.close();
         } catch (SQLException ex) {
-            Logger.getLogger(TelaArea.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(TelaPPC.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_formWindowClosed
 
@@ -418,20 +384,21 @@ public class TelaArea extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(TelaArea.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaPPC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(TelaArea.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaPPC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(TelaArea.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaPPC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(TelaArea.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(TelaPPC.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TelaArea().setVisible(true);
+                new TelaPPC().setVisible(true);
             }
         });
     }
@@ -444,10 +411,15 @@ public class TelaArea extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblAreaConsulta;
+    private javax.swing.JTextField txtAno;
+    private javax.swing.JTextField txtCargaH;
     private javax.swing.JTextField txtConsultaArea;
-    private javax.swing.JTextField txtIdArea;
-    private javax.swing.JTextField txtNomeArea;
+    private javax.swing.JTextField txtIdPpc;
     // End of variables declaration//GEN-END:variables
 }

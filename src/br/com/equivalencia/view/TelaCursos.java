@@ -30,17 +30,17 @@ public class TelaCursos extends javax.swing.JFrame {
             pst = conexao.prepareStatement(sql);
             pst.setString(1,txtNomeCurso.getText());
             pst.setString(2,txtCargaHoraria.getText());
-            pst.setString(3,txtIdArea.getText());
+            pst.setString(3,txtIdCurs.getText());
             pst.setString(4,txtIdPPC.getText());
             
-            if((txtNomeCurso.getText().isEmpty()) ||(txtCargaHoraria.getText().isEmpty()) || (txtIdArea.getText().isEmpty()) || (txtIdPPC.getText().isEmpty())){
+            if((txtNomeArea.getText().isEmpty()) ||(txtCargaHoraria.getText().isEmpty()) || (txtIdPPC.getText().isEmpty())){
                 JOptionPane.showMessageDialog(null,"Um ou mais campos de preechimento obrigatórios não foram preenchidos.");
             }else{
                 int adicionado = pst.executeUpdate();
                 System.out.println(adicionado);
                 if (adicionado>0){
-                    JOptionPane.showMessageDialog(null,"Área Tecnologica cadastrada com sucesso!.");
-                    txtNomeCurso.setText(null);
+                    JOptionPane.showMessageDialog(null,"Curso cadastrado com sucesso!.");
+                    txtNomeArea.setText(null);
                 }
                 
             }
@@ -50,9 +50,22 @@ public class TelaCursos extends javax.swing.JFrame {
     }
      private void consultar() {
         String sqlArea = "select id_area as Id, nome as Área from area_tecnologica where nome like ?";
-
+        String sqlPPC = "select id_ppc as ID, ano as Ano,ch as 'Carga h.' from ppc where ano like ?";
+        String sqlCurso = "select id_curso as ID, nome as Nome,ch as 'Carga h.', id_area as 'Id Area', id_ppc as 'Id PPC' from cursos where nome like ?";
+        
         try {
+            //consulta area
             pst = conexao.prepareStatement(sqlArea);
+            pst.setString(1, txtConsultaArea.getText() + "%");
+            rs = pst.executeQuery();
+            tblAreaConsulta.setModel(DbUtils.resultSetToTableModel(rs));
+            //consula o PPC
+            pst = conexao.prepareStatement(sqlPPC);
+            pst.setString(1, txtConsultaArea.getText() + "%");
+            rs = pst.executeQuery();
+            tblPPCConsulta.setModel(DbUtils.resultSetToTableModel(rs));
+            //consulta o Curso
+            pst = conexao.prepareStatement(sqlCurso);
             pst.setString(1, txtConsultaArea.getText() + "%");
             rs = pst.executeQuery();
             tblCursoConsulta.setModel(DbUtils.resultSetToTableModel(rs));
@@ -62,7 +75,7 @@ public class TelaCursos extends javax.swing.JFrame {
         }
     }
     private void alterar(){
-    String sql="update area_tecnologica set nome=? where id_area=?";
+    String sql="update cursos set nome=? where id_curso=?";
     
         try {
             pst=conexao.prepareStatement(sql);
@@ -71,7 +84,7 @@ public class TelaCursos extends javax.swing.JFrame {
             pst.setString(2,txtIdCurso.getText());
 
             // validação dos campos obrigatórios
-            if ((txtIdCurso.getText().isEmpty()) || (txtNomeCurso.getText().isEmpty())) {
+            if ((txtIdCurs.getText().isEmpty()) || (txtNomeArea.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Campo de preenchimento obrigatório está em branco!");
 
             } else {
@@ -79,7 +92,7 @@ public class TelaCursos extends javax.swing.JFrame {
                 int adicionado = pst.executeUpdate();
                 // a linha abaixo serve de apoio ao entendimento da lógica
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Informações de Área Tecnológica alteradas com sucesso!");
+                    JOptionPane.showMessageDialog(null, "Informações do Curso alteradas com sucesso!");
                     // as linhas abaixo limpam os campos para que o usuario possa cadastrar um novo
                     //txtIdArea.setText(null);
                     //txtNomeArea.setText(null);
@@ -92,7 +105,7 @@ public class TelaCursos extends javax.swing.JFrame {
         }
     }
     public void excluir(){
-        String sql =  "delete from area_tecnologica where id_area=?" ;
+        String sql =  "delete from cursos where id_curso=?" ;
         
         int confirm = JOptionPane.showConfirmDialog(null, "Você tem certeza?","Atenção",JOptionPane.YES_NO_OPTION);
         
@@ -105,37 +118,57 @@ public class TelaCursos extends javax.swing.JFrame {
                 int apagado = pst.executeUpdate();
 
                 if(apagado > 0 ){
-                    JOptionPane.showMessageDialog(null, "Area Tecnologica apagada com sucesso.");
-                    txtIdCurso.setText(null);
-                    txtNomeCurso.setText(null);
+                    JOptionPane.showMessageDialog(null, "Curso apagado com sucesso.");
+                    txtIdCurs.setText(null);
+                    txtNomeArea.setText(null);
                     btnAdicionarArea.setEnabled(true);
                     btnExcluirArea.setEnabled(false);
                     btnEditarArea.setEnabled(false);
                     
                 }
             } catch(java.sql.SQLIntegrityConstraintViolationException e){
-                JOptionPane.showMessageDialog(null,"A area não pode ser deletada.\nTente deletar os cursos vinculados a ela antes de apagar a mesma.");
+                JOptionPane.showMessageDialog(null,"A Curso não pode ser deletada.\nTente deletar as Unidades vinculados a ela antes de apagar a mesma.");
             }catch(Exception e1){
                  JOptionPane.showMessageDialog(null, e1);
             }
         }
     }
-    public void setar_campos(){
-    tblCursoConsulta.setVisible(true);
-    int setar = tblCursoConsulta.getSelectedRow();
-    txtIdCurso.setText(tblCursoConsulta.getModel().getValueAt(setar,0).toString());
-    txtNomeCurso.setText(tblCursoConsulta.getModel().getValueAt(setar,1).toString());
-    btnAdicionarArea.setEnabled(false);
-    btnEditarArea.setEnabled(true);
-    btnExcluirArea.setEnabled(true);
-}
+    public void setar_Area(){
+        tblAreaConsulta.setVisible(true);
+        int setar = tblAreaConsulta.getSelectedRow();
+        txtIdCurs.setText(tblAreaConsulta.getModel().getValueAt(setar,0).toString());
+        txtNomeArea.setText(tblAreaConsulta.getModel().getValueAt(setar,1).toString());
+   
+    }
     
+    public void setar_PPC(){
+        tblPPCConsulta.setVisible(true);
+        int setar = tblPPCConsulta.getSelectedRow();
+        txtIdPPC.setText(tblPPCConsulta.getModel().getValueAt(setar,0).toString());
+        txtCargaHoraria.setText(tblPPCConsulta.getModel().getValueAt(setar,1).toString());
+
+    }
+    
+    public void setar_Curso(){
+        tblCursoConsulta.setVisible(true);
+        int setar = tblCursoConsulta.getSelectedRow();
+        txtIdCurso.setText(tblCursoConsulta.getModel().getValueAt(setar,0).toString());
+        txtNomeCurso.setText(tblCursoConsulta.getModel().getValueAt(setar,1).toString());
+        txtIdPPC.setText(tblCursoConsulta.getModel().getValueAt(setar,2).toString());
+        txtCargaHoraria.setText(tblCursoConsulta.getModel().getValueAt(setar,3).toString());
+        txtIdCurs.setText(tblCursoConsulta.getModel().getValueAt(setar,4).toString());
+        //txtNomeArea.setText(tblCursoConsulta.getModel().getValueAt(setar,5).toString());
+        
+        btnAdicionarArea.setEnabled(false);
+        btnEditarArea.setEnabled(true);
+        btnExcluirArea.setEnabled(true);
+    }
     /**
      * Creates new form TelaArea
      */
     public TelaCursos() {
         initComponents();
-        tblCursoConsulta.setVisible(false);
+        tblAreaConsulta.setVisible(false);
         Color nova = new Color(0,0,0);
         getContentPane().setBackground(nova);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/equivalencia/imagens/tela-icon.png")));
@@ -153,30 +186,30 @@ public class TelaCursos extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
-        txtIdCurso = new javax.swing.JTextField();
+        txtIdCurs = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        txtNomeCurso = new javax.swing.JTextField();
+        txtNomeArea = new javax.swing.JTextField();
         btnAdicionarArea = new javax.swing.JButton();
         btnEditarArea = new javax.swing.JButton();
         btnPesquisarArea = new javax.swing.JButton();
         btnExcluirArea = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblCursoConsulta = new javax.swing.JTable();
+        tblAreaConsulta = new javax.swing.JTable();
         txtConsultaArea = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
         txtCargaHoraria = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        txtIdArea = new javax.swing.JTextField();
+        txtIdCurso = new javax.swing.JTextField();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         txtIdPPC = new javax.swing.JTextField();
-        jTextField1 = new javax.swing.JTextField();
+        txtNomeCurso = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
-        dbPPC = new javax.swing.JTable();
+        tblPPCConsulta = new javax.swing.JTable();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblCursoConsulta = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         txtConsultarPPC = new javax.swing.JTextField();
         jLabel10 = new javax.swing.JLabel();
@@ -191,27 +224,27 @@ public class TelaCursos extends javax.swing.JFrame {
             }
         });
 
-        jLabel1.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("Id Curso");
 
-        txtIdCurso.setBackground(new java.awt.Color(204, 204, 204));
-        txtIdCurso.setEnabled(false);
-        txtIdCurso.addActionListener(new java.awt.event.ActionListener() {
+        txtIdCurs.setBackground(new java.awt.Color(204, 204, 204));
+        txtIdCurs.setEnabled(false);
+        txtIdCurs.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdCursoActionPerformed(evt);
+                txtIdCursActionPerformed(evt);
             }
         });
 
-        jLabel2.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel2.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setText("Nome Area:");
 
-        txtNomeCurso.setBackground(new java.awt.Color(204, 204, 204));
-        txtNomeCurso.setEnabled(false);
-        txtNomeCurso.addActionListener(new java.awt.event.ActionListener() {
+        txtNomeArea.setBackground(new java.awt.Color(204, 204, 204));
+        txtNomeArea.setEnabled(false);
+        txtNomeArea.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNomeCursoActionPerformed(evt);
+                txtNomeAreaActionPerformed(evt);
             }
         });
 
@@ -257,7 +290,7 @@ public class TelaCursos extends javax.swing.JFrame {
             }
         });
 
-        tblCursoConsulta.setModel(new javax.swing.table.DefaultTableModel(
+        tblAreaConsulta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null},
                 {null, null},
@@ -268,12 +301,12 @@ public class TelaCursos extends javax.swing.JFrame {
                 "Id Área", "Nome Area"
             }
         ));
-        tblCursoConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblAreaConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblCursoConsultaMouseClicked(evt);
+                tblAreaConsultaMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblCursoConsulta);
+        jScrollPane1.setViewportView(tblAreaConsulta);
 
         txtConsultaArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -291,7 +324,7 @@ public class TelaCursos extends javax.swing.JFrame {
             }
         });
 
-        jLabel3.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel3.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Pesquisar:");
 
@@ -303,25 +336,25 @@ public class TelaCursos extends javax.swing.JFrame {
             }
         });
 
-        jLabel4.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel4.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
         jLabel4.setText("Carga Horaria:");
 
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
 
-        txtIdArea.setBackground(new java.awt.Color(204, 204, 204));
-        txtIdArea.setEnabled(false);
-        txtIdArea.addActionListener(new java.awt.event.ActionListener() {
+        txtIdCurso.setBackground(new java.awt.Color(204, 204, 204));
+        txtIdCurso.setEnabled(false);
+        txtIdCurso.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdAreaActionPerformed(evt);
+                txtIdCursoActionPerformed(evt);
             }
         });
 
-        jLabel6.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel6.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Id Area:");
 
-        jLabel7.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel7.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Id PPC:");
 
@@ -333,9 +366,9 @@ public class TelaCursos extends javax.swing.JFrame {
             }
         });
 
-        jTextField1.setBackground(new java.awt.Color(204, 204, 204));
+        txtNomeCurso.setBackground(new java.awt.Color(204, 204, 204));
 
-        dbPPC.setModel(new javax.swing.table.DefaultTableModel(
+        tblPPCConsulta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null},
                 {null, null, null},
@@ -347,18 +380,18 @@ public class TelaCursos extends javax.swing.JFrame {
                 "Id PPC", "Ano", "C. Horaria"
             }
         ));
-        dbPPC.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblPPCConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                dbPPCMouseClicked(evt);
+                tblPPCConsultaMouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(dbPPC);
+        jScrollPane2.setViewportView(tblPPCConsulta);
 
-        jLabel8.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel8.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
         jLabel8.setText("Nome Curso");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblCursoConsulta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null, null},
                 {null, null, null, null, null},
@@ -369,9 +402,14 @@ public class TelaCursos extends javax.swing.JFrame {
                 "Id Curso", "Nome", "Carga H.", "Id Area", "Id PPC"
             }
         ));
-        jScrollPane3.setViewportView(jTable1);
+        tblCursoConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblCursoConsultaMouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(tblCursoConsulta);
 
-        jLabel9.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
         jLabel9.setText("Cursos cadastrados");
 
@@ -381,7 +419,7 @@ public class TelaCursos extends javax.swing.JFrame {
             }
         });
 
-        jLabel10.setFont(new java.awt.Font("Stencil", 0, 12)); // NOI18N
+        jLabel10.setFont(new java.awt.Font("Arial", 0, 12)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("Pesquisar");
 
@@ -423,20 +461,20 @@ public class TelaCursos extends javax.swing.JFrame {
                                                         .addComponent(jLabel8)
                                                         .addGap(18, 18, 18)))))
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(txtNomeCurso, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
-                                            .addComponent(jTextField1))
+                                            .addComponent(txtNomeArea, javax.swing.GroupLayout.DEFAULT_SIZE, 261, Short.MAX_VALUE)
+                                            .addComponent(txtNomeCurso))
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGap(6, 6, 6)
                                                 .addComponent(jLabel1)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtIdArea, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(txtIdCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addGap(0, 0, Short.MAX_VALUE))
                                             .addGroup(layout.createSequentialGroup()
                                                 .addGap(10, 10, 10)
                                                 .addComponent(jLabel6)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                                .addComponent(txtIdCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))))
+                                                .addComponent(txtIdCurs, javax.swing.GroupLayout.PREFERRED_SIZE, 1, Short.MAX_VALUE))))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
@@ -455,7 +493,7 @@ public class TelaCursos extends javax.swing.JFrame {
                                                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(txtConsultarPPC, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                                        .addGap(0, 163, Short.MAX_VALUE)))
+                                        .addGap(0, 172, Short.MAX_VALUE)))
                                 .addGap(27, 27, 27)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                     .addGroup(layout.createSequentialGroup()
@@ -484,14 +522,14 @@ public class TelaCursos extends javax.swing.JFrame {
                                 .addComponent(jLabel5))
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(txtIdArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtIdCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtNomeCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel8)
                                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(18, 18, 18)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(txtNomeCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(txtIdCurso, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtNomeArea, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtIdCurs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel2)
                                     .addComponent(jLabel6))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
@@ -533,9 +571,9 @@ public class TelaCursos extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void txtIdCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdCursoActionPerformed
+    private void txtIdCursActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdCursActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdCursoActionPerformed
+    }//GEN-LAST:event_txtIdCursActionPerformed
 
     private void btnAdicionarAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarAreaActionPerformed
         adicionar();
@@ -548,7 +586,9 @@ public class TelaCursos extends javax.swing.JFrame {
     }//GEN-LAST:event_btnEditarAreaActionPerformed
 
     private void btnPesquisarAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPesquisarAreaActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
+        TelaPrincipal principal = new TelaPrincipal();
+        principal.setVisible(true);
     }//GEN-LAST:event_btnPesquisarAreaActionPerformed
 
     private void btnExcluirAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirAreaActionPerformed
@@ -565,7 +605,7 @@ public class TelaCursos extends javax.swing.JFrame {
     }//GEN-LAST:event_formWindowClosed
 
     private void txtConsultaAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtConsultaAreaActionPerformed
-        tblCursoConsulta.setVisible(true);
+        tblAreaConsulta.setVisible(true);
         consultar();
      
     }//GEN-LAST:event_txtConsultaAreaActionPerformed
@@ -574,31 +614,31 @@ public class TelaCursos extends javax.swing.JFrame {
         consultar();
     }//GEN-LAST:event_txtConsultaAreaKeyReleased
 
-    private void tblCursoConsultaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCursoConsultaMouseClicked
-        setar_campos();
+    private void tblAreaConsultaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAreaConsultaMouseClicked
+        setar_Area();
         consultar();
-    }//GEN-LAST:event_tblCursoConsultaMouseClicked
+    }//GEN-LAST:event_tblAreaConsultaMouseClicked
 
     private void txtConsultaAreaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtConsultaAreaMouseClicked
-        tblCursoConsulta.setVisible(true);
+        tblAreaConsulta.setVisible(true);
         consultar();
     }//GEN-LAST:event_txtConsultaAreaMouseClicked
 
-    private void txtNomeCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeCursoActionPerformed
+    private void txtNomeAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeAreaActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNomeCursoActionPerformed
+    }//GEN-LAST:event_txtNomeAreaActionPerformed
 
     private void txtCargaHorariaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCargaHorariaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCargaHorariaActionPerformed
 
-    private void dbPPCMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_dbPPCMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dbPPCMouseClicked
+    private void tblPPCConsultaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblPPCConsultaMouseClicked
+        setar_PPC();
+    }//GEN-LAST:event_tblPPCConsultaMouseClicked
 
-    private void txtIdAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdAreaActionPerformed
+    private void txtIdCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdCursoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdAreaActionPerformed
+    }//GEN-LAST:event_txtIdCursoActionPerformed
 
     private void txtIdPPCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdPPCActionPerformed
         // TODO add your handling code here:
@@ -607,6 +647,10 @@ public class TelaCursos extends javax.swing.JFrame {
     private void txtConsultarPPCActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtConsultarPPCActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtConsultarPPCActionPerformed
+
+    private void tblCursoConsultaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblCursoConsultaMouseClicked
+        setar_Curso();
+    }//GEN-LAST:event_tblCursoConsultaMouseClicked
 
     /**
      * @param args the command line arguments
@@ -649,7 +693,6 @@ public class TelaCursos extends javax.swing.JFrame {
     private javax.swing.JButton btnEditarArea;
     private javax.swing.JButton btnExcluirArea;
     private javax.swing.JButton btnPesquisarArea;
-    private javax.swing.JTable dbPPC;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
@@ -663,15 +706,16 @@ public class TelaCursos extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
+    private javax.swing.JTable tblAreaConsulta;
     private javax.swing.JTable tblCursoConsulta;
+    private javax.swing.JTable tblPPCConsulta;
     private javax.swing.JTextField txtCargaHoraria;
     private javax.swing.JTextField txtConsultaArea;
     private javax.swing.JTextField txtConsultarPPC;
-    private javax.swing.JTextField txtIdArea;
+    private javax.swing.JTextField txtIdCurs;
     private javax.swing.JTextField txtIdCurso;
     private javax.swing.JTextField txtIdPPC;
+    private javax.swing.JTextField txtNomeArea;
     private javax.swing.JTextField txtNomeCurso;
     // End of variables declaration//GEN-END:variables
 }

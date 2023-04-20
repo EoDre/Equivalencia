@@ -65,8 +65,14 @@ public class TelaPrincipal extends javax.swing.JFrame {
         btnGrupoEquiv.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btnGrupoEquiv.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnGrupoEquiv.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        btnGrupoEquiv.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGrupoEquivActionPerformed(evt);
+            }
+        });
 
         btnArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/area-icon.png"))); // NOI18N
+        btnArea.setText("okay");
         btnArea.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         btnArea.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         btnArea.setMargin(new java.awt.Insets(0, 0, 0, 0));
@@ -97,16 +103,36 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menCadUsuario.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/user-icon.png"))); // NOI18N
         menCadUsuario.setText("Usuários");
         menCadUsuario.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        menCadUsuario.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                menCadUsuarioMouseClicked(evt);
+            }
+        });
+        menCadUsuario.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCadUsuarioActionPerformed(evt);
+            }
+        });
         menCad.add(menCadUsuario);
 
         jMenuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/curso-icon.png"))); // NOI18N
         jMenuItem2.setText("Cursos");
         jMenuItem2.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
         menCad.add(jMenuItem2);
 
         menCadPpc.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/curso-icon.png"))); // NOI18N
         menCadPpc.setText("PPC");
         menCadPpc.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        menCadPpc.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menCadPpcActionPerformed(evt);
+            }
+        });
         menCad.add(menCadPpc);
 
         menCadunidade.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/curso-icon.png"))); // NOI18N
@@ -202,38 +228,38 @@ public class TelaPrincipal extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(77, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(84, 84, 84)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnArea, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnUnidades, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnGrupoEquiv, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnPpc, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnEquivalencia, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(125, 125, 125))
+                    .addComponent(btnArea, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnPpc, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(32, 32, 32)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnGrupoEquiv, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnEquivalencia, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(98, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(30, 30, 30)
+                .addGap(46, 46, 46)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnCurso, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnGrupoEquiv, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnArea, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(37, 37, 37)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnEquivalencia, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnPpc, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(90, Short.MAX_VALUE))
+                    .addComponent(btnPpc, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnUnidades, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(55, Short.MAX_VALUE))
         );
+
+        btnArea.getAccessibleContext().setAccessibleName("");
 
         getAccessibleContext().setAccessibleDescription("");
 
@@ -242,7 +268,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void menCadAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadAreaActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
         TelaArea area = new TelaArea();
         area.setVisible(true);
     }//GEN-LAST:event_menCadAreaActionPerformed
@@ -252,7 +278,9 @@ public class TelaPrincipal extends javax.swing.JFrame {
     }//GEN-LAST:event_menFluxoActionPerformed
 
     private void menCadGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadGrupoActionPerformed
-        // TODO add your handling code here:
+        this.dispose();
+        TelaEquivalencia equivalencia = new TelaEquivalencia();
+        equivalencia.setVisible(true);
     }//GEN-LAST:event_menCadGrupoActionPerformed
 
     private void menOpcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menOpcActionPerformed
@@ -269,6 +297,33 @@ public class TelaPrincipal extends javax.swing.JFrame {
     private void menSairActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menSairActionPerformed
         System.exit(0);
     }//GEN-LAST:event_menSairActionPerformed
+
+    private void menCadUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadUsuarioActionPerformed
+        this.dispose();
+        TelaUsuario usuario = new TelaUsuario();
+        usuario.setVisible(true);
+    }//GEN-LAST:event_menCadUsuarioActionPerformed
+
+    private void menCadUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menCadUsuarioMouseClicked
+        
+    }//GEN-LAST:event_menCadUsuarioMouseClicked
+
+    private void menCadPpcActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadPpcActionPerformed
+        this.dispose();
+        TelaPPC ppc = new TelaPPC();
+        ppc.setVisible(true);
+        
+    }//GEN-LAST:event_menCadPpcActionPerformed
+
+    private void btnGrupoEquivActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGrupoEquivActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnGrupoEquivActionPerformed
+
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        this.dispose();
+        TelaCursos curso = new TelaCursos();
+        curso.setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
 
     /**
      * @param args the command line arguments
