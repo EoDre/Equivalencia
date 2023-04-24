@@ -25,7 +25,7 @@ public class TelaUsuario extends javax.swing.JFrame {
     ResultSet rs = null;
     
     public void adicionar(){
-        String sql = "insert into usuarios(nome,cpf,login,senha,perfil) values (?,?,?,?,?)";
+        String sql = "insert into tb_usuarios(nome,fone,login,senha,perfil) values (?,?,?,sha2(?,512),?)";
         
         try {
             pst = conexao.prepareStatement(sql);
@@ -53,7 +53,7 @@ public class TelaUsuario extends javax.swing.JFrame {
         }
     }
      private void consultar() {
-        String sql = "select id_usuario as 'ID Usuário', nome as 'Nome Usuário', cpf as 'Cpf Usuário', login as Login,  senha as Senha, perfil as Perfil from usuarios where nome like?";
+        String sql = "select id as 'ID Usuário', nome as 'Nome Usuário', fone as 'Cpf Usuário', login as Login, senha as Senha, perfil as Perfil from tb_usuarios where nome like?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -66,7 +66,7 @@ public class TelaUsuario extends javax.swing.JFrame {
         }
     }
     private void alterar(){
-    String sql="update usuarios set nome=?, cpf=?, login=?,senha=?, perfil=? where id_usuario=?";
+    String sql="update tb_usuarios set nome=?, cpf=?, login=?,senha=sha2(?,512), perfil=? where id=?";
     
         try {
             pst=conexao.prepareStatement(sql);
@@ -100,7 +100,7 @@ public class TelaUsuario extends javax.swing.JFrame {
         }
     }
     public void excluir(){
-        String sql =  "delete from usuarios where id_usuario=?" ;
+        String sql =  "delete from tb_usuarios where id=?" ;
         
         int confirm = JOptionPane.showConfirmDialog(null, "Você tem certeza?","Atenção",JOptionPane.YES_NO_OPTION);
         
@@ -153,7 +153,6 @@ public class TelaUsuario extends javax.swing.JFrame {
         Color nova = new Color(0,0,0);
         getContentPane().setBackground(nova);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/equivalencia/imagens/tela-icon.png")));
-        
         conexao = ModuloConexao.conector();
     }
 
@@ -180,13 +179,13 @@ public class TelaUsuario extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         txtCpf = new javax.swing.JTextField();
         txtLogin = new javax.swing.JTextField();
-        txtSenha = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
         cmoPerfil = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        txtSenha = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sistema Equivalencia - Tela Area tecnologica");
@@ -275,19 +274,19 @@ public class TelaUsuario extends javax.swing.JFrame {
 
         tblUsuarioConsulta.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Id Usuario", "Nome Usuario", "Cpf", "Login", "Senha", "Perfil"
+                "Id Usuario", "Nome Usuario", "fone", "Login", "Perfil"
             }
         ));
         tblUsuarioConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -339,15 +338,8 @@ public class TelaUsuario extends javax.swing.JFrame {
         });
         getContentPane().add(txtLogin, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 140, 105, -1));
 
-        txtSenha.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                txtSenhaKeyPressed(evt);
-            }
-        });
-        getContentPane().add(txtSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 200, 105, -1));
-
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Cpf :");
+        jLabel4.setText("fone :");
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 20, -1, 22));
 
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
@@ -359,7 +351,7 @@ public class TelaUsuario extends javax.swing.JFrame {
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, -1, 22));
 
         cmoPerfil.setForeground(new java.awt.Color(255, 255, 255));
-        cmoPerfil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Admin", "Usuario" }));
+        cmoPerfil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Usuario", "Admin", " " }));
         getContentPane().add(cmoPerfil, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 105, -1));
 
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
@@ -368,6 +360,13 @@ public class TelaUsuario extends javax.swing.JFrame {
 
         jLabel8.setText("jLabel8");
         getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 80, -1, 320));
+
+        txtSenha.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtSenhaActionPerformed(evt);
+            }
+        });
+        getContentPane().add(txtSenha, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 200, 100, -1));
 
         getAccessibleContext().setAccessibleDescription("");
 
@@ -424,6 +423,7 @@ public class TelaUsuario extends javax.swing.JFrame {
     private void tblUsuarioConsultaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblUsuarioConsultaMouseClicked
         setar_campos();
         consultar();
+        
     }//GEN-LAST:event_tblUsuarioConsultaMouseClicked
 
     private void txtConsultaUsuarioMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtConsultaUsuarioMouseClicked
@@ -449,13 +449,13 @@ public class TelaUsuario extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_txtLoginKeyPressed
 
-    private void txtSenhaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtSenhaKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtSenhaKeyPressed
-
     private void txtCpfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCpfActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtCpfActionPerformed
+
+    private void txtSenhaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtSenhaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtSenhaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -514,6 +514,6 @@ public class TelaUsuario extends javax.swing.JFrame {
     private javax.swing.JTextField txtIdUsuario;
     private javax.swing.JTextField txtLogin;
     private javax.swing.JTextField txtNomeUsuario;
-    private javax.swing.JTextField txtSenha;
+    private javax.swing.JPasswordField txtSenha;
     // End of variables declaration//GEN-END:variables
 }

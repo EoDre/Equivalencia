@@ -20,7 +20,7 @@ public class TelaLogin extends javax.swing.JFrame {
     //Criando um metodo logar
     
     public void logar(){
-        String sql = "select * from usuarios where login=? and senha=?";
+        String sql = "select * from tb_usuarios where login=? and senha=sha2(?,512)";
          
         try {
             pst = conexao.prepareStatement(sql);

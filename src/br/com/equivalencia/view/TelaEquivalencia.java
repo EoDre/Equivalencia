@@ -11,6 +11,7 @@ import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
 import net.proteanit.sql.DbUtils;
 
 /**
@@ -18,138 +19,302 @@ import net.proteanit.sql.DbUtils;
  * @author asilva
  */
 public class TelaEquivalencia extends javax.swing.JFrame {
-    
+
     Connection conexao = null;
     PreparedStatement pst = null;
     ResultSet rs = null;
-    
-    public void adicionar(){
-        String sql = "insert into equivalencia(nome,ch_max,ch_min) values (?,?,?)";
-        
-        try {
-            pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtNome.getText());
-            pst.setString(2,txtCargaHMax.getText());
-            pst.setString(3,txtCargaHMin.getText());
-            
-            
-            if(txtCargaHMax.getText().isEmpty()){
-                JOptionPane.showMessageDialog(null,"Campo de preechimento obrigatório não foi preenchido.");
-            }else{
-                int adicionado = pst.executeUpdate();
-                System.out.println(adicionado);
-                if (adicionado>0){
-                    JOptionPane.showMessageDialog(null,"Equivalencia cadastrada com sucesso!.");
-                    txtCargaHMax.setText(null);
-                }
-                
-            }
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(null,e);
-        }
-    }
-     private void consultar() {
-        String sql = "select id_equivalencia as 'Id Equivalencia', nome as 'Nome', ch_max as 'Carga Horaria Max.', ch_min as 'Carga Horaria Min.' from equivalencia where nome like?";
 
+    private void pesquisar_area() {
+        String sql = "select * from tb_area_tecnologica order by nome_area";
+        txtIdArea.setText(null);
+        txtIdCurso.setText(null);
+        txtIdPpc.setText(null);
         try {
             pst = conexao.prepareStatement(sql);
-            pst.setString(1, txtConsultaArea.getText() + "%");
             rs = pst.executeQuery();
-            tblAreaConsulta.setModel(DbUtils.resultSetToTableModel(rs));
+            cboArea.removeAllItems();
+            while (rs.next()) {
+                cboArea.addItem(rs.getString(2));
+                //cboArea.updateUI();
+
+            }
 
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    private void alterar(){
-    String sql="update equivalencia set nome=?, ch_max=?, ch_min=? where id_equivalencia=?";
-    
+        
+        
+    private void setar_id_area() {
+
+        String sql = "select id_area from tb_area_tecnologica where nome_area=?";
+
         try {
-            pst=conexao.prepareStatement(sql);
-            
-            pst.setString(1,txtNome.getText());
-            pst.setString(2,txtCargaHMax.getText());
-            pst.setString(3,txtCargaHMin.getText());
-            pst.setString(4,txtIdEquivalencia.getText());
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cboArea.getSelectedItem().toString());
+            rs = pst.executeQuery();
 
-            // validação dos campos obrigatórios
-            if ((txtIdEquivalencia.getText().isEmpty()) || (txtCargaHMax.getText().isEmpty())) {
-                JOptionPane.showMessageDialog(null, "Campo de preenchimento obrigatório está em branco!");
-
-            } else {
-
-                int adicionado = pst.executeUpdate();
-                // a linha abaixo serve de apoio ao entendimento da lógica
-                if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Informações da equivalencia foram alteradas com sucesso!");
-                    // as linhas abaixo limpam os campos para que o usuario possa cadastrar um novo
-                    //txtIdArea.setText(null);
-                    //txtNomeArea.setText(null);
-
-                }
+            if (rs.next()) {
+                txtIdArea.setText(rs.getString(1));
             }
-            
+            cboCurso.removeAllItems();
+            pesquisar_curso();
+
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e);
         }
     }
-    public void excluir(){
-        String sql =  "delete from equivalencia where id_equivalencia=?" ;
         
-        int confirm = JOptionPane.showConfirmDialog(null, "Você tem certeza?","Atenção",JOptionPane.YES_NO_OPTION);
-        
-        if(confirm == JOptionPane.YES_OPTION){
-            try {
-                
-                pst = conexao.prepareStatement(sql);
-                pst.setString(1, txtIdEquivalencia.getText());
-                
-                int apagado = pst.executeUpdate();
+    private void pesquisar_curso() {
+        String sql = "select * from tb_cursos where id_area=?";
+        txtIdCurso.setText(null);
+        txtIdPpc.setText(null);
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdArea.getText());
+            rs = pst.executeQuery();
 
-                if(apagado > 0 ){
-                    JOptionPane.showMessageDialog(null, "Equivalencia apagada com sucesso.");
-                    txtIdEquivalencia.setText(null);
-                    txtCargaHMax.setText(null);
-                    btnAdicionarArea.setEnabled(true);
-                    btnExcluirArea.setEnabled(false);
-                    btnEditarArea.setEnabled(false);
-                    
-                }
-            } catch(java.sql.SQLIntegrityConstraintViolationException e){
-                JOptionPane.showMessageDialog(null,"O ppc não pode ser deletado.\nTente deletar os cursos vinculados a ele antes de apagar o mesmo.");
-            }catch(Exception e1){
-                 JOptionPane.showMessageDialog(null, e1);
+            while (rs.next()) {
+                cboCurso.addItem(rs.getString(2));
+                //cboCurso.updateUI();
             }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    } 
+    
+    private void pesquisar_ppc() {
+        String sql = "select * from tb_ppc where id_curso=? order by desc_ano";
+        cboPpc.removeAllItems();
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdCurso.getText());
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                cboPpc.addItem(rs.getString(2));
+            }
+            txtIdPpc.setText(null);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não existem planos de curso cadastrados para o curso selecionado!");
         }
     }
-    public void setar_campos(){
-    tblAreaConsulta.setVisible(true);
-    int setar = tblAreaConsulta.getSelectedRow();
-    txtIdEquivalencia.setText(tblAreaConsulta.getModel().getValueAt(setar,0).toString());
-    txtNome.setText(tblAreaConsulta.getModel().getValueAt(setar,1).toString());
-    txtCargaHMax.setText(tblAreaConsulta.getModel().getValueAt(setar,2).toString());
-    txtCargaHMin.setText(tblAreaConsulta.getModel().getValueAt(setar,3).toString());
-    btnAdicionarArea.setEnabled(false);
-    btnEditarArea.setEnabled(true);
-    btnExcluirArea.setEnabled(true);
-}
-    public void limpar_campos(){
-        txtNome.setText(null);
-        txtCargaHMin.setText(null);
-        txtCargaHMax.setText(null);
-        txtIdEquivalencia.setText(null);
-        
+    
+    private void setar_id_ppc() {
+
+        String sql = "select id_ppc from tb_ppc where desc_ano=?";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cboPpc.getSelectedItem().toString());
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                txtIdPpc.setText(rs.getString(1));
+            } else {
+                txtIdPpc.setText(null);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não existem cursos cadastrados para a área selecionada!");
+        }
     }
+    
+    private void listar_disciplinas() {
+        setar_id_ppc();
+        String sql = "select id_disciplina as 'Id U.C.', nome_disciplina as 'Disciplina', ch_disciplina as 'C.H. da U.C.', ch_presencial as 'C.H. Presencial', ch_ead as 'C.H. EAD', id_grupo_equivalencia as 'Grupo Equivalência', id_ppc as 'PPC' from tb_disciplinas where id_ppc=?";
+        tblDisciplinas.setEnabled(true);
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdPpc.getText());
+            rs = pst.executeQuery();
+            tblDisciplinas.setVisible(true);
+            tblDisciplinas.setModel(DbUtils.resultSetToTableModel(rs));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+     private void pesquisar_area1() {
+        String sql = "select * from tb_area_tecnologica order by nome_area";
+        txtIdArea1.setText(null);
+        txtIdCurso1.setText(null);
+        txtIdPpc1.setText(null);
+        try {
+            pst = conexao.prepareStatement(sql);
+            rs = pst.executeQuery();
+            cboArea1.removeAllItems();
+            while (rs.next()) {
+                cboArea1.addItem(rs.getString(2));
+
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+     
+    private void setar_id_area1() {
+
+        String sql = "select id_area from tb_area_tecnologica where nome_area=?";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cboArea1.getSelectedItem().toString());
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                txtIdArea1.setText(rs.getString(1));
+            }
+            cboCurso1.removeAllItems();
+            pesquisar_curso1();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    } 
+    
+    private void pesquisar_curso1() {
+        String sql = "select * from tb_cursos where id_area=?";
+        txtIdCurso1.setText(null);
+        txtIdPpc1.setText(null);
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdArea1.getText());
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                cboCurso1.addItem(rs.getString(2));
+                //cboCurso.updateUI();
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+    private void setar_id_curso1() {
+
+        String sql = "select id_curso from tb_cursos where nome_curso=?";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cboCurso1.getSelectedItem().toString());
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                txtIdCurso1.setText(rs.getString(1));
+                pesquisar_ppc1();
+            } else {
+                txtIdCurso1.setText(null);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não existem cursos cadastrados para a área selecionada!");
+        }
+    }
+    
+    private void pesquisar_ppc1() {
+        String sql = "select * from tb_ppc where id_curso=? order by desc_ano";
+        cboPpc1.removeAllItems();
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdCurso1.getText());
+            rs = pst.executeQuery();
+
+            while (rs.next()) {
+                cboPpc1.addItem(rs.getString(2));
+            }
+            txtIdPpc1.setText(null);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não existem planos de curso cadastrados para o curso selecionado!");
+        }
+    }
+    
+     private void setar_id_ppc1() {
+
+        String sql = "select id_ppc from tb_ppc where desc_ano=?";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cboPpc1.getSelectedItem().toString());
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                txtIdPpc1.setText(rs.getString(1));
+            } else {
+                txtIdPpc1.setText(null);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não existem planos de curso cadastrados para o curso selecionado!");
+        }
+    }
+     
+    private void listar_disciplinas1() {
+        setar_id_ppc1();
+        String sql = "select id_disciplina as 'Id U.C.', nome_disciplina as 'Disciplina', ch_disciplina as 'C.H. da U.C.', ch_presencial as 'C.H. Presencial', ch_ead as 'C.H. EAD', id_grupo_equivalencia as 'Grupo Equivalência', id_ppc as 'PPC' from tb_disciplinas where id_ppc=?";
+        tblDisciplinas1.setEnabled(true);
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, txtIdPpc1.getText());
+            rs = pst.executeQuery();
+            tblDisciplinas1.setVisible(true);
+            tblDisciplinas1.setModel(DbUtils.resultSetToTableModel(rs));
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e);
+        }
+    }
+    
+     public void compararListas() {
+
+        DefaultTableModel tdm = (DefaultTableModel) tblDisciplinas.getModel();
+
+        DefaultTableModel tdm2 = (DefaultTableModel) tblDisciplinas1.getModel();
+
+        DefaultTableModel tdm3 = (DefaultTableModel) tblDisciplinas2.getModel();
+
+        tdm3.setRowCount(0);
+
+        tdm.getDataVector().forEach(l -> {
+           
+            tdm2.getDataVector().forEach(m -> {
+               
+                if (l.get(5).equals(m.get(5))) {
+                    tdm3.addRow(new Object[]{
+                        l.get(0),
+                        l.get(1).toString().toUpperCase(),
+                        l.get(2).toString(),
+                        l.get(3).toString(),
+                        l.get(4).toString(),
+                        l.get(5).toString(),
+                        l.get(6).toString()
+                    });
+                }
+            });
+        });
+    }
+    
+    
     /**
-     * Creates new form TelaArea
-     */
+         * Creates new form TelaArea
+         */
     public TelaEquivalencia() {
         initComponents();
-        tblAreaConsulta.setVisible(false);
-        Color nova = new Color(0,0,0);
+        tblDisciplinas.setVisible(false);
+        Color nova = new Color(0, 0, 0);
         getContentPane().setBackground(nova);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/equivalencia/imagens/tela-icon.png")));
-        
+
         conexao = ModuloConexao.conector();
     }
 
@@ -164,23 +329,38 @@ public class TelaEquivalencia extends javax.swing.JFrame {
 
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jLabel1 = new javax.swing.JLabel();
-        txtIdEquivalencia = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        txtCargaHMax = new javax.swing.JTextField();
-        btnAdicionarArea = new javax.swing.JButton();
-        btnEditarArea = new javax.swing.JButton();
-        btnVoltar = new javax.swing.JButton();
-        btnExcluirArea = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        tblAreaConsulta = new javax.swing.JTable();
-        txtConsultaArea = new javax.swing.JTextField();
-        jLabel3 = new javax.swing.JLabel();
-        txtCargaHMin = new javax.swing.JTextField();
-        jLabel4 = new javax.swing.JLabel();
+        tblDisciplinas = new javax.swing.JTable();
         jLabel7 = new javax.swing.JLabel();
-        txtNome = new javax.swing.JTextField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblDisciplinas1 = new javax.swing.JTable();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        tblDisciplinas2 = new javax.swing.JTable();
+        jButton1 = new javax.swing.JButton();
+        cboArea = new javax.swing.JComboBox<>();
+        cboPpc = new javax.swing.JComboBox<>();
+        cboCurso = new javax.swing.JComboBox<>();
+        cboCurso1 = new javax.swing.JComboBox<>();
+        cboArea1 = new javax.swing.JComboBox<>();
+        cboPpc1 = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        txtIdCurso = new javax.swing.JTextField();
+        txtIdArea = new javax.swing.JTextField();
+        txtIdPpc = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        txtIdArea1 = new javax.swing.JTextField();
+        txtIdCurso1 = new javax.swing.JTextField();
+        txtIdPpc1 = new javax.swing.JTextField();
+        jButton2 = new javax.swing.JButton();
+        jLabel12 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
+        jButton3 = new javax.swing.JButton();
 
         jLabel5.setText("jLabel5");
 
@@ -197,171 +377,166 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("ID :");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 30, 22));
-
-        txtIdEquivalencia.setBackground(new java.awt.Color(204, 204, 204));
-        txtIdEquivalencia.setEnabled(false);
-        txtIdEquivalencia.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtIdEquivalenciaActionPerformed(evt);
-            }
-        });
-        getContentPane().add(txtIdEquivalencia, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 30, 105, 22));
-
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Carga Hr Max:");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, -1, 22));
-        getContentPane().add(txtCargaHMax, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 120, 105, 22));
-
-        btnAdicionarArea.setBackground(new java.awt.Color(51, 255, 51));
-        btnAdicionarArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/add-area-icon.png"))); // NOI18N
-        btnAdicionarArea.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnAdicionarArea.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        btnAdicionarArea.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAdicionarAreaActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btnAdicionarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, 48, 48));
-        btnAdicionarArea.getAccessibleContext().setAccessibleDescription("");
-
-        btnEditarArea.setBackground(new java.awt.Color(255, 255, 51));
-        btnEditarArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/editar-area-icon.png"))); // NOI18N
-        btnEditarArea.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnEditarArea.setEnabled(false);
-        btnEditarArea.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        btnEditarArea.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarAreaActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btnEditarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 230, 48, 48));
-        btnEditarArea.getAccessibleContext().setAccessibleDescription("");
-
-        btnVoltar.setBackground(new java.awt.Color(255, 51, 102));
-        btnVoltar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/back.png"))); // NOI18N
-        btnVoltar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnVoltar.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        btnVoltar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnVoltarActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btnVoltar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, 48, 48));
-        btnVoltar.getAccessibleContext().setAccessibleDescription("");
-
-        btnExcluirArea.setBackground(new java.awt.Color(255, 51, 51));
-        btnExcluirArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/exluir-area-icon.png"))); // NOI18N
-        btnExcluirArea.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        btnExcluirArea.setEnabled(false);
-        btnExcluirArea.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        btnExcluirArea.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnExcluirAreaActionPerformed(evt);
-            }
-        });
-        getContentPane().add(btnExcluirArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 310, 48, 48));
-        btnExcluirArea.getAccessibleContext().setAccessibleDescription("");
-
-        tblAreaConsulta.setModel(new javax.swing.table.DefaultTableModel(
+        tblDisciplinas.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Id Equivalencia", "Nome", "Carga Horaria Max", "Carga Horaria min"
+                "Id ", "Nome", "Carga Horaria", "C.H Presencial", "C.H EAD"
             }
         ));
-        tblAreaConsulta.addMouseListener(new java.awt.event.MouseAdapter() {
+        tblDisciplinas.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                tblAreaConsultaMouseClicked(evt);
+                tblDisciplinasMouseClicked(evt);
             }
         });
-        jScrollPane1.setViewportView(tblAreaConsulta);
+        jScrollPane1.setViewportView(tblDisciplinas);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(218, 59, 420, 230));
-
-        txtConsultaArea.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                txtConsultaAreaMouseClicked(evt);
-            }
-        });
-        txtConsultaArea.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtConsultaAreaActionPerformed(evt);
-            }
-        });
-        txtConsultaArea.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtConsultaAreaKeyReleased(evt);
-            }
-        });
-        getContentPane().add(txtConsultaArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(297, 30, 220, 22));
-
-        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Pesquisar :");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 80, 22));
-        getContentPane().add(txtCargaHMin, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 160, 105, 22));
-
-        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Carga Hr Min");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, -1, 22));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 210, 420, 230));
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 60, 30, 270));
 
-        txtNome.addActionListener(new java.awt.event.ActionListener() {
+        tblDisciplinas1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Id", "Nome", "Carga Horária", "C.H Presencial", "C.H EAD"
+            }
+        ));
+        jScrollPane2.setViewportView(tblDisciplinas1);
+
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 210, -1, 230));
+
+        tblDisciplinas2.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "ID", "U.C", "C.H Total", "C.H EAD", "ID Grupo Equiv"
+            }
+        ));
+        jScrollPane3.setViewportView(tblDisciplinas2);
+
+        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 500, 780, 221));
+
+        jButton1.setText("Verificar Equivalencia");
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(504, 465, -1, -1));
+
+        cboArea.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNomeActionPerformed(evt);
+                cboAreaActionPerformed(evt);
             }
         });
-        getContentPane().add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 100, -1));
+        getContentPane().add(cboArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 32, 314, -1));
+
+        getContentPane().add(cboPpc, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 111, 314, -1));
+
+        cboCurso.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cboCursoActionPerformed(evt);
+            }
+        });
+        getContentPane().add(cboCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 71, 314, -1));
+
+        getContentPane().add(cboCurso1, new org.netbeans.lib.awtextra.AbsoluteConstraints(803, 72, 331, -1));
+
+        getContentPane().add(cboArea1, new org.netbeans.lib.awtextra.AbsoluteConstraints(803, 32, 331, -1));
+
+        getContentPane().add(cboPpc1, new org.netbeans.lib.awtextra.AbsoluteConstraints(803, 112, 331, -1));
+
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Id Area Tecnologica");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 35, -1, -1));
+
+        txtIdCurso.setEnabled(false);
+        getContentPane().add(txtIdCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 66, 43, -1));
+
+        txtIdArea.setEnabled(false);
+        txtIdArea.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtIdAreaActionPerformed(evt);
+            }
+        });
+        getContentPane().add(txtIdArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 32, 43, -1));
+
+        txtIdPpc.setEnabled(false);
+        getContentPane().add(txtIdPpc, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 111, 43, -1));
+
+        jLabel3.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel3.setText("Id Plano de Cursos");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 114, -1, -1));
+
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Id Curso Técnico");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(37, 69, -1, -1));
+
+        jLabel4.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel4.setText("Id Área Técnologica");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(632, 32, -1, -1));
 
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Nome:");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+        jLabel8.setText("Id Curso Técnico");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 70, -1, -1));
+
+        jLabel9.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel9.setText("Id Planos de Cursos");
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 110, -1, -1));
+
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("PPC Cursado");
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(309, 10, -1, -1));
+
+        jLabel11.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel11.setText("PPC a Cursar");
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(828, 6, -1, -1));
+
+        txtIdArea1.setEnabled(false);
+        getContentPane().add(txtIdArea1, new org.netbeans.lib.awtextra.AbsoluteConstraints(754, 32, 43, -1));
+
+        txtIdCurso1.setEnabled(false);
+        getContentPane().add(txtIdCurso1, new org.netbeans.lib.awtextra.AbsoluteConstraints(754, 72, 43, -1));
+
+        txtIdPpc1.setEnabled(false);
+        txtIdPpc1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtIdPpc1ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(txtIdPpc1, new org.netbeans.lib.awtextra.AbsoluteConstraints(754, 112, 43, -1));
+
+        jButton2.setText("Listar PPC");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 160, -1, 20));
+        getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(1170, 40, 40, 670));
+        getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 740, 1150, 30));
+
+        jButton3.setText("Listar PCC");
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 160, -1, -1));
 
         getAccessibleContext().setAccessibleDescription("");
 
         pack();
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
-
-    private void txtIdEquivalenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdEquivalenciaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtIdEquivalenciaActionPerformed
-
-    private void btnAdicionarAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdicionarAreaActionPerformed
-        adicionar();
-        consultar();
-        limpar_campos();
-    }//GEN-LAST:event_btnAdicionarAreaActionPerformed
-
-    private void btnEditarAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarAreaActionPerformed
-        alterar();
-        consultar();
-        limpar_campos();
-    }//GEN-LAST:event_btnEditarAreaActionPerformed
-
-    private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
-        this.dispose();
-        TelaPrincipal principal = new TelaPrincipal();
-        principal.setVisible(true);
-    }//GEN-LAST:event_btnVoltarActionPerformed
-
-    private void btnExcluirAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExcluirAreaActionPerformed
-        excluir();
-        consultar();
-        limpar_campos();
-    }//GEN-LAST:event_btnExcluirAreaActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
         try {
@@ -371,29 +546,29 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_formWindowClosed
 
-    private void txtConsultaAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtConsultaAreaActionPerformed
-        tblAreaConsulta.setVisible(true);
-        consultar();
-     
-    }//GEN-LAST:event_txtConsultaAreaActionPerformed
+    private void tblDisciplinasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblDisciplinasMouseClicked
+   
+    }//GEN-LAST:event_tblDisciplinasMouseClicked
 
-    private void txtConsultaAreaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtConsultaAreaKeyReleased
-        consultar();
-    }//GEN-LAST:event_txtConsultaAreaKeyReleased
-
-    private void tblAreaConsultaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblAreaConsultaMouseClicked
-        setar_campos();
-        consultar();
-    }//GEN-LAST:event_tblAreaConsultaMouseClicked
-
-    private void txtConsultaAreaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_txtConsultaAreaMouseClicked
-        tblAreaConsulta.setVisible(true);
-        consultar();
-    }//GEN-LAST:event_txtConsultaAreaMouseClicked
-
-    private void txtNomeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNomeActionPerformed
+    private void cboCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboCursoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNomeActionPerformed
+    }//GEN-LAST:event_cboCursoActionPerformed
+
+    private void txtIdAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdAreaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdAreaActionPerformed
+
+    private void txtIdPpc1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdPpc1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtIdPpc1ActionPerformed
+
+    private void cboAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboAreaActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cboAreaActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -424,6 +599,18 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -434,11 +621,20 @@ public class TelaEquivalencia extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnAdicionarArea;
-    private javax.swing.JButton btnEditarArea;
-    private javax.swing.JButton btnExcluirArea;
-    private javax.swing.JButton btnVoltar;
+    private javax.swing.JComboBox<String> cboArea;
+    private javax.swing.JComboBox<String> cboArea1;
+    private javax.swing.JComboBox<String> cboCurso;
+    private javax.swing.JComboBox<String> cboCurso1;
+    private javax.swing.JComboBox<String> cboPpc;
+    private javax.swing.JComboBox<String> cboPpc1;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -446,12 +642,18 @@ public class TelaEquivalencia extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable tblAreaConsulta;
-    private javax.swing.JTextField txtCargaHMax;
-    private javax.swing.JTextField txtCargaHMin;
-    private javax.swing.JTextField txtConsultaArea;
-    private javax.swing.JTextField txtIdEquivalencia;
-    private javax.swing.JTextField txtNome;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JTable tblDisciplinas;
+    private javax.swing.JTable tblDisciplinas1;
+    private javax.swing.JTable tblDisciplinas2;
+    private javax.swing.JTextField txtIdArea;
+    private javax.swing.JTextField txtIdArea1;
+    private javax.swing.JTextField txtIdCurso;
+    private javax.swing.JTextField txtIdCurso1;
+    private javax.swing.JTextField txtIdPpc;
+    private javax.swing.JTextField txtIdPpc1;
     // End of variables declaration//GEN-END:variables
 }

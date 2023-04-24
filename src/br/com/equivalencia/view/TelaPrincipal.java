@@ -279,7 +279,7 @@ public class TelaPrincipal extends javax.swing.JFrame {
 
     private void menCadGrupoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menCadGrupoActionPerformed
         this.dispose();
-        TelaEquivalencia equivalencia = new TelaEquivalencia();
+        TelaGrupoEquivalencia equivalencia = new TelaGrupoEquivalencia();
         equivalencia.setVisible(true);
     }//GEN-LAST:event_menCadGrupoActionPerformed
 

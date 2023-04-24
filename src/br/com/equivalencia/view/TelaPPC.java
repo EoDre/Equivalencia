@@ -24,12 +24,14 @@ public class TelaPPC extends javax.swing.JFrame {
     ResultSet rs = null;
     
     public void adicionar(){
-        String sql = "insert into ppc(ch,ano) values (?,?)";
+        String sql = "insert into tb_ppc(desc_ano,ch_curso,modalidade,id_curso) values (?,?,?,?)";
         
         try {
             pst = conexao.prepareStatement(sql);
-            pst.setString(1,txtCargaH.getText());
-            pst.setString(2,txtAno.getText());
+            pst.setString(1,txtAno.getText());
+            pst.setString(2,txtCargaH.getText());
+            pst.setString(3,txtModalidade.getText());
+            pst.setString(4,txtIdCurso.getText());
             
             if(txtCargaH.getText().isEmpty()){
                 JOptionPane.showMessageDialog(null,"Campo de preechimento obrigatório não foi preenchido.");
@@ -169,6 +171,8 @@ public class TelaPPC extends javax.swing.JFrame {
         txtAno = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
+        txtModalidade = new javax.swing.JTextField();
+        txtIdCurso = new javax.swing.JTextField();
 
         jLabel5.setText("jLabel5");
 
@@ -212,7 +216,7 @@ public class TelaPPC extends javax.swing.JFrame {
                 btnAdicionarAreaActionPerformed(evt);
             }
         });
-        getContentPane().add(btnAdicionarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, 48, 48));
+        getContentPane().add(btnAdicionarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 240, 48, 48));
         btnAdicionarArea.getAccessibleContext().setAccessibleDescription("");
 
         btnEditarArea.setBackground(new java.awt.Color(255, 255, 51));
@@ -225,7 +229,7 @@ public class TelaPPC extends javax.swing.JFrame {
                 btnEditarAreaActionPerformed(evt);
             }
         });
-        getContentPane().add(btnEditarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 160, 48, 48));
+        getContentPane().add(btnEditarArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 240, 48, 48));
         btnEditarArea.getAccessibleContext().setAccessibleDescription("");
 
         btnVoltar.setBackground(new java.awt.Color(255, 51, 102));
@@ -237,7 +241,7 @@ public class TelaPPC extends javax.swing.JFrame {
                 btnVoltarActionPerformed(evt);
             }
         });
-        getContentPane().add(btnVoltar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, 48, 48));
+        getContentPane().add(btnVoltar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 320, 48, 48));
         btnVoltar.getAccessibleContext().setAccessibleDescription("");
 
         btnExcluirArea.setBackground(new java.awt.Color(255, 51, 51));
@@ -250,7 +254,7 @@ public class TelaPPC extends javax.swing.JFrame {
                 btnExcluirAreaActionPerformed(evt);
             }
         });
-        getContentPane().add(btnExcluirArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 240, 48, 48));
+        getContentPane().add(btnExcluirArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 320, 48, 48));
         btnExcluirArea.getAccessibleContext().setAccessibleDescription("");
 
         tblAreaConsulta.setModel(new javax.swing.table.DefaultTableModel(
@@ -277,7 +281,7 @@ public class TelaPPC extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblAreaConsulta);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(218, 59, 300, 230));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 70, 300, 230));
 
         txtConsultaArea.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -294,7 +298,7 @@ public class TelaPPC extends javax.swing.JFrame {
                 txtConsultaAreaKeyReleased(evt);
             }
         });
-        getContentPane().add(txtConsultaArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(297, 30, 220, 22));
+        getContentPane().add(txtConsultaArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 40, 220, 22));
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Pesquisar :");
@@ -306,7 +310,15 @@ public class TelaPPC extends javax.swing.JFrame {
         getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, -1, 22));
 
         jLabel7.setText("jLabel7");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 60, 30, 270));
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 70, 30, 310));
+
+        txtModalidade.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtModalidadeActionPerformed(evt);
+            }
+        });
+        getContentPane().add(txtModalidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 150, 110, -1));
+        getContentPane().add(txtIdCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 190, 110, -1));
 
         getAccessibleContext().setAccessibleDescription("");
 
@@ -367,6 +379,10 @@ public class TelaPPC extends javax.swing.JFrame {
         consultar();
     }//GEN-LAST:event_txtConsultaAreaMouseClicked
 
+    private void txtModalidadeActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtModalidadeActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtModalidadeActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -420,6 +436,8 @@ public class TelaPPC extends javax.swing.JFrame {
     private javax.swing.JTextField txtAno;
     private javax.swing.JTextField txtCargaH;
     private javax.swing.JTextField txtConsultaArea;
+    private javax.swing.JTextField txtIdCurso;
     private javax.swing.JTextField txtIdPpc;
+    private javax.swing.JTextField txtModalidade;
     // End of variables declaration//GEN-END:variables
 }

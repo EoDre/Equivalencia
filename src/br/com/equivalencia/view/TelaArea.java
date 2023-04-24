@@ -24,7 +24,7 @@ public class TelaArea extends javax.swing.JFrame {
     ResultSet rs = null;
     
     public void adicionar(){
-        String sql = "insert into area_tecnologica(nome) values (?)";
+        String sql = "insert into tb_area_tecnologica(nome_area) values (?)";
         
         try {
             pst = conexao.prepareStatement(sql);
@@ -46,7 +46,7 @@ public class TelaArea extends javax.swing.JFrame {
         }
     }
      private void consultar() {
-        String sql = "select id_area as Id, nome as Área from area_tecnologica where nome like ?";
+        String sql = "select id_area as Id, nome_area as Área from tb_area_tecnologica where nome_area like ?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -59,7 +59,7 @@ public class TelaArea extends javax.swing.JFrame {
         }
     }
     private void alterar(){
-    String sql="update area_tecnologica set nome=? where id_area=?";
+    String sql="update tb_area_tecnologica set nome_area=? where id_area=?";
     
         try {
             pst=conexao.prepareStatement(sql);
@@ -89,7 +89,7 @@ public class TelaArea extends javax.swing.JFrame {
         }
     }
     public void excluir(){
-        String sql =  "delete from area_tecnologica where id_area=?" ;
+        String sql =  "delete from tb_area_tecnologica where id_area=?" ;
         
         int confirm = JOptionPane.showConfirmDialog(null, "Você tem certeza?","Atenção",JOptionPane.YES_NO_OPTION);
         
