@@ -49,7 +49,7 @@ public class TelaPPC extends javax.swing.JFrame {
         }
     }
      private void consultar() {
-        String sql = "select id_ppc as 'Id PPC', ch as 'Carga Horaria', ano as ano from ppc where ano like?";
+        String sql = "select id_ppc as 'Id PPC', desc_ano as 'Descrição ano', ch_curso as 'Carga Horaria', modalidade as Modalidade, id_curso as 'Id Curso' from tb_ppc where desc_ano like?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -62,14 +62,16 @@ public class TelaPPC extends javax.swing.JFrame {
         }
     }
     private void alterar(){
-    String sql="update ppc set ch=?, ano=?  where id_ppc=?";
+    String sql="update tb_ppc set desc_ano=?, ch_curso=?, modalidade=?, id_curso=?  where id_ppc=?";
     
         try {
             pst=conexao.prepareStatement(sql);
             
-            pst.setString(1,txtCargaH.getText());
-            pst.setString(2,txtAno.getText());
-            pst.setString(3,txtIdPpc.getText());
+            pst.setString(2,txtCargaH.getText());
+            pst.setString(1,txtAno.getText());
+            pst.setString(4,txtIdCurso.getText());
+            pst.setString(3,txtModalidade.getText());
+            pst.setString(5,txtIdPpc.getText());
 
             // validação dos campos obrigatórios
             if ((txtIdPpc.getText().isEmpty()) || (txtCargaH.getText().isEmpty())) {
@@ -93,7 +95,7 @@ public class TelaPPC extends javax.swing.JFrame {
         }
     }
     public void excluir(){
-        String sql =  "delete from ppc where id_ppc=?" ;
+        String sql =  "delete from tb_ppc where id_ppc=?" ;
         
         int confirm = JOptionPane.showConfirmDialog(null, "Você tem certeza?","Atenção",JOptionPane.YES_NO_OPTION);
         
@@ -127,9 +129,12 @@ public class TelaPPC extends javax.swing.JFrame {
     txtIdPpc.setText(tblAreaConsulta.getModel().getValueAt(setar,0).toString());
     txtCargaH.setText(tblAreaConsulta.getModel().getValueAt(setar,1).toString());
     txtAno.setText(tblAreaConsulta.getModel().getValueAt(setar,2).toString());
+    txtModalidade.setText(tblAreaConsulta.getModel().getValueAt(setar,3 ).toString());
+    txtIdCurso.setText(tblAreaConsulta.getModel().getValueAt(setar,4 ).toString());
     btnAdicionarArea.setEnabled(false);
     btnEditarArea.setEnabled(true);
     btnExcluirArea.setEnabled(true);
+    
 }
     
     /**
@@ -173,6 +178,9 @@ public class TelaPPC extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         txtModalidade = new javax.swing.JTextField();
         txtIdCurso = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel9 = new javax.swing.JLabel();
+        jLabel10 = new javax.swing.JLabel();
 
         jLabel5.setText("jLabel5");
 
@@ -320,6 +328,15 @@ public class TelaPPC extends javax.swing.JFrame {
         getContentPane().add(txtModalidade, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 150, 110, -1));
         getContentPane().add(txtIdCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 190, 110, -1));
 
+        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel8.setText("Modalidade");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, -1, -1));
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, -1, -1));
+
+        jLabel10.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel10.setText("Id Curso;");
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, -1, -1));
+
         getAccessibleContext().setAccessibleDescription("");
 
         pack();
@@ -425,12 +442,15 @@ public class TelaPPC extends javax.swing.JFrame {
     private javax.swing.JButton btnExcluirArea;
     private javax.swing.JButton btnVoltar;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblAreaConsulta;
     private javax.swing.JTextField txtAno;

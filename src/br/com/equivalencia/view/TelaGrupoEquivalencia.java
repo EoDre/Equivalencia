@@ -24,23 +24,23 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
     ResultSet rs = null;
     
     public void adicionar(){
-        String sql = "insert into equivalencia(nome,ch_max,ch_min) values (?,?,?)";
+        String sql = "insert into tb_grupo_equivalencia(desc_grupo,ch_minima,ch_maxima) values (?,?,?)";
         
         try {
             pst = conexao.prepareStatement(sql);
             pst.setString(1, txtNome.getText());
-            pst.setString(2,txtCargaHMax.getText());
-            pst.setString(3,txtCargaHMin.getText());
+            pst.setString(2,txtCargaHMinima.getText());
+            pst.setString(3,txtCargaHMaxima.getText());
             
             
-            if(txtCargaHMax.getText().isEmpty()){
+            if(txtCargaHMinima.getText().isEmpty()){
                 JOptionPane.showMessageDialog(null,"Campo de preechimento obrigatório não foi preenchido.");
             }else{
                 int adicionado = pst.executeUpdate();
                 System.out.println(adicionado);
                 if (adicionado>0){
-                    JOptionPane.showMessageDialog(null,"Equivalencia cadastrada com sucesso!.");
-                    txtCargaHMax.setText(null);
+                    JOptionPane.showMessageDialog(null,"Grupo cadastrado com sucesso!.");
+                    txtCargaHMinima.setText(null);
                 }
                 
             }
@@ -49,7 +49,7 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
         }
     }
      private void consultar() {
-        String sql = "select id_equivalencia as 'Id Equivalencia', nome as 'Nome', ch_max as 'Carga Horaria Max.', ch_min as 'Carga Horaria Min.' from equivalencia where nome like?";
+        String sql = "select id_grupo as 'Id Equivalencia', desc_grupo as 'Descrição', ch_minima as 'Carga Horaria Min.', ch_maxima as 'Carga Horaria Max.' from tb_grupo_equivalencia where desc_grupo like?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -62,18 +62,18 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
         }
     }
     private void alterar(){
-    String sql="update equivalencia set nome=?, ch_max=?, ch_min=? where id_equivalencia=?";
+    String sql="update tb_grupo_equivalencia set desc_grupo=?, ch_minima=?, ch_maxima=? where id_grupo=?";
     
         try {
             pst=conexao.prepareStatement(sql);
             
             pst.setString(1,txtNome.getText());
-            pst.setString(2,txtCargaHMax.getText());
-            pst.setString(3,txtCargaHMin.getText());
+            pst.setString(2,txtCargaHMinima.getText());
+            pst.setString(3,txtCargaHMaxima.getText());
             pst.setString(4,txtIdEquivalencia.getText());
 
             // validação dos campos obrigatórios
-            if ((txtIdEquivalencia.getText().isEmpty()) || (txtCargaHMax.getText().isEmpty())) {
+            if ((txtIdEquivalencia.getText().isEmpty()) || (txtCargaHMinima.getText().isEmpty())) {
                 JOptionPane.showMessageDialog(null, "Campo de preenchimento obrigatório está em branco!");
 
             } else {
@@ -81,7 +81,7 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
                 int adicionado = pst.executeUpdate();
                 // a linha abaixo serve de apoio ao entendimento da lógica
                 if (adicionado > 0) {
-                    JOptionPane.showMessageDialog(null, "Informações da equivalencia foram alteradas com sucesso!");
+                    JOptionPane.showMessageDialog(null, "Informações do grupo foram alteradas com sucesso!");
                     // as linhas abaixo limpam os campos para que o usuario possa cadastrar um novo
                     //txtIdArea.setText(null);
                     //txtNomeArea.setText(null);
@@ -94,7 +94,7 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
         }
     }
     public void excluir(){
-        String sql =  "delete from equivalencia where id_equivalencia=?" ;
+        String sql =  "delete from tb_grupo_equivalencia where id_grupo=?" ;
         
         int confirm = JOptionPane.showConfirmDialog(null, "Você tem certeza?","Atenção",JOptionPane.YES_NO_OPTION);
         
@@ -107,16 +107,16 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
                 int apagado = pst.executeUpdate();
 
                 if(apagado > 0 ){
-                    JOptionPane.showMessageDialog(null, "Equivalencia apagada com sucesso.");
+                    JOptionPane.showMessageDialog(null, "Grupo apagada com sucesso.");
                     txtIdEquivalencia.setText(null);
-                    txtCargaHMax.setText(null);
+                    txtCargaHMinima.setText(null);
                     btnAdicionarArea.setEnabled(true);
                     btnExcluirArea.setEnabled(false);
                     btnEditarArea.setEnabled(false);
                     
                 }
             } catch(java.sql.SQLIntegrityConstraintViolationException e){
-                JOptionPane.showMessageDialog(null,"O ppc não pode ser deletado.\nTente deletar os cursos vinculados a ele antes de apagar o mesmo.");
+                JOptionPane.showMessageDialog(null,"O grupo não pode ser deletado.\nTente deletar os cursos vinculados a ele antes de apagar o mesmo.");
             }catch(Exception e1){
                  JOptionPane.showMessageDialog(null, e1);
             }
@@ -127,16 +127,16 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
     int setar = tblAreaConsulta.getSelectedRow();
     txtIdEquivalencia.setText(tblAreaConsulta.getModel().getValueAt(setar,0).toString());
     txtNome.setText(tblAreaConsulta.getModel().getValueAt(setar,1).toString());
-    txtCargaHMax.setText(tblAreaConsulta.getModel().getValueAt(setar,2).toString());
-    txtCargaHMin.setText(tblAreaConsulta.getModel().getValueAt(setar,3).toString());
+    txtCargaHMinima.setText(tblAreaConsulta.getModel().getValueAt(setar,2).toString());
+    txtCargaHMaxima.setText(tblAreaConsulta.getModel().getValueAt(setar,3).toString());
     btnAdicionarArea.setEnabled(false);
     btnEditarArea.setEnabled(true);
     btnExcluirArea.setEnabled(true);
 }
     public void limpar_campos(){
         txtNome.setText(null);
-        txtCargaHMin.setText(null);
-        txtCargaHMax.setText(null);
+        txtCargaHMaxima.setText(null);
+        txtCargaHMinima.setText(null);
         txtIdEquivalencia.setText(null);
         
     }
@@ -167,7 +167,7 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         txtIdEquivalencia = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
-        txtCargaHMax = new javax.swing.JTextField();
+        txtCargaHMinima = new javax.swing.JTextField();
         btnAdicionarArea = new javax.swing.JButton();
         btnEditarArea = new javax.swing.JButton();
         btnVoltar = new javax.swing.JButton();
@@ -176,7 +176,7 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
         tblAreaConsulta = new javax.swing.JTable();
         txtConsultaArea = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        txtCargaHMin = new javax.swing.JTextField();
+        txtCargaHMaxima = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         txtNome = new javax.swing.JTextField();
@@ -199,7 +199,7 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
         jLabel1.setText("ID :");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 30, 22));
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 30, 30, -1));
 
         txtIdEquivalencia.setBackground(new java.awt.Color(204, 204, 204));
         txtIdEquivalencia.setEnabled(false);
@@ -208,12 +208,12 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
                 txtIdEquivalenciaActionPerformed(evt);
             }
         });
-        getContentPane().add(txtIdEquivalencia, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 30, 105, 22));
+        getContentPane().add(txtIdEquivalencia, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 30, 105, -1));
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Carga Hr Max:");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 120, -1, 22));
-        getContentPane().add(txtCargaHMax, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 120, 105, 22));
+        jLabel2.setText("Carga Hr Max :");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 130, -1, 22));
+        getContentPane().add(txtCargaHMinima, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 180, 105, -1));
 
         btnAdicionarArea.setBackground(new java.awt.Color(51, 255, 51));
         btnAdicionarArea.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/add-area-icon.png"))); // NOI18N
@@ -306,16 +306,16 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
                 txtConsultaAreaKeyReleased(evt);
             }
         });
-        getContentPane().add(txtConsultaArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(297, 30, 220, 22));
+        getContentPane().add(txtConsultaArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(297, 30, 340, 22));
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Pesquisar :");
         getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 30, 80, 22));
-        getContentPane().add(txtCargaHMin, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 160, 105, 22));
+        getContentPane().add(txtCargaHMaxima, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 130, 105, -1));
 
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Carga Hr Min");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 160, -1, 22));
+        jLabel4.setText("Carga Hr Min :");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 180, -1, 22));
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 60, 30, 270));
 
         txtNome.addActionListener(new java.awt.event.ActionListener() {
@@ -323,11 +323,11 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
                 txtNomeActionPerformed(evt);
             }
         });
-        getContentPane().add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 80, 100, -1));
+        getContentPane().add(txtNome, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 80, 105, -1));
 
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Nome:");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+        jLabel8.setText("Descrição :");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 80, -1, -1));
 
         getAccessibleContext().setAccessibleDescription("");
 
@@ -452,8 +452,8 @@ public class TelaGrupoEquivalencia extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tblAreaConsulta;
-    private javax.swing.JTextField txtCargaHMax;
-    private javax.swing.JTextField txtCargaHMin;
+    private javax.swing.JTextField txtCargaHMaxima;
+    private javax.swing.JTextField txtCargaHMinima;
     private javax.swing.JTextField txtConsultaArea;
     private javax.swing.JTextField txtIdEquivalencia;
     private javax.swing.JTextField txtNome;

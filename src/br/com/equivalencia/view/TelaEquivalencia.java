@@ -29,6 +29,7 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         txtIdArea.setText(null);
         txtIdCurso.setText(null);
         txtIdPpc.setText(null);
+        
         try {
             pst = conexao.prepareStatement(sql);
             rs = pst.executeQuery();
@@ -83,6 +84,27 @@ public class TelaEquivalencia extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, e);
         }
     } 
+    
+    private void setar_id_curso() {
+
+        String sql = "select id_curso from tb_cursos where nome_curso=?";
+
+        try {
+            pst = conexao.prepareStatement(sql);
+            pst.setString(1, cboCurso.getSelectedItem().toString());
+            rs = pst.executeQuery();
+
+            if (rs.next()) {
+                txtIdCurso.setText(rs.getString(1));
+                pesquisar_ppc();
+            } else {
+                txtIdCurso.setText(null);
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não existem cursos cadastrados para a área selecionada!");
+        }
+    }
     
     private void pesquisar_ppc() {
         String sql = "select * from tb_ppc where id_curso=? order by desc_ano";
@@ -314,8 +336,8 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         Color nova = new Color(0, 0, 0);
         getContentPane().setBackground(nova);
         setIconImage(Toolkit.getDefaultToolkit().getImage(getClass().getResource("/br/com/equivalencia/imagens/tela-icon.png")));
-
         conexao = ModuloConexao.conector();
+        pesquisar_area();
     }
 
     /**
@@ -401,7 +423,7 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(tblDisciplinas);
 
-        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 210, 420, 230));
+        getContentPane().add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 230, 440, 230));
         getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(520, 60, 30, 270));
 
         tblDisciplinas1.setModel(new javax.swing.table.DefaultTableModel(
@@ -417,7 +439,7 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         ));
         jScrollPane2.setViewportView(tblDisciplinas1);
 
-        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 210, -1, 230));
+        getContentPane().add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 230, -1, 230));
 
         tblDisciplinas2.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -432,39 +454,64 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         ));
         jScrollPane3.setViewportView(tblDisciplinas2);
 
-        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 500, 780, 221));
+        getContentPane().add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 480, 780, 230));
 
         jButton1.setText("Verificar Equivalencia");
-        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(504, 465, -1, -1));
-
-        cboArea.addActionListener(new java.awt.event.ActionListener() {
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboAreaActionPerformed(evt);
+                jButton1ActionPerformed(evt);
             }
         });
-        getContentPane().add(cboArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 32, 314, -1));
+        getContentPane().add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 730, 150, -1));
 
-        getContentPane().add(cboPpc, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 111, 314, -1));
-
-        cboCurso.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cboCursoActionPerformed(evt);
+        cboArea.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cboAreaFocusLost(evt);
             }
         });
-        getContentPane().add(cboCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(192, 71, 314, -1));
+        getContentPane().add(cboArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 60, 314, -1));
 
-        getContentPane().add(cboCurso1, new org.netbeans.lib.awtextra.AbsoluteConstraints(803, 72, 331, -1));
+        cboPpc.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cboPpcFocusLost(evt);
+            }
+        });
+        getContentPane().add(cboPpc, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 140, 314, -1));
 
-        getContentPane().add(cboArea1, new org.netbeans.lib.awtextra.AbsoluteConstraints(803, 32, 331, -1));
+        cboCurso.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cboCursoFocusLost(evt);
+            }
+        });
+        getContentPane().add(cboCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 100, 314, -1));
 
-        getContentPane().add(cboPpc1, new org.netbeans.lib.awtextra.AbsoluteConstraints(803, 112, 331, -1));
+        cboCurso1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cboCurso1FocusLost(evt);
+            }
+        });
+        getContentPane().add(cboCurso1, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 100, 331, -1));
+
+        cboArea1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cboArea1FocusLost(evt);
+            }
+        });
+        getContentPane().add(cboArea1, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 60, 331, -1));
+
+        cboPpc1.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                cboPpc1FocusLost(evt);
+            }
+        });
+        getContentPane().add(cboPpc1, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 140, 331, -1));
 
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Id Area Tecnologica");
-        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 35, -1, -1));
+        jLabel1.setText("Id Area Tecnologica :");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, -1, -1));
 
         txtIdCurso.setEnabled(false);
-        getContentPane().add(txtIdCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 66, 43, -1));
+        getContentPane().add(txtIdCurso, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 100, 40, -1));
 
         txtIdArea.setEnabled(false);
         txtIdArea.addActionListener(new java.awt.event.ActionListener() {
@@ -472,44 +519,44 @@ public class TelaEquivalencia extends javax.swing.JFrame {
                 txtIdAreaActionPerformed(evt);
             }
         });
-        getContentPane().add(txtIdArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 32, 43, -1));
+        getContentPane().add(txtIdArea, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 60, 40, -1));
 
         txtIdPpc.setEnabled(false);
-        getContentPane().add(txtIdPpc, new org.netbeans.lib.awtextra.AbsoluteConstraints(143, 111, 43, -1));
+        getContentPane().add(txtIdPpc, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 140, 40, -1));
 
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel3.setText("Id Plano de Cursos");
-        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(21, 114, -1, -1));
+        jLabel3.setText("Id Plano de Cursos :");
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 140, -1, -1));
 
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Id Curso Técnico");
-        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(37, 69, -1, -1));
+        jLabel2.setText("Id Curso Técnico :");
+        getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, -1, -1));
 
         jLabel4.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel4.setText("Id Área Técnologica");
-        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(632, 32, -1, -1));
+        jLabel4.setText("Id Área Técnologica :");
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 60, -1, -1));
 
         jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Id Curso Técnico");
-        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(650, 70, -1, -1));
+        jLabel8.setText("Id Curso Técnico :");
+        getContentPane().add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 100, -1, -1));
 
         jLabel9.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel9.setText("Id Planos de Cursos");
-        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 110, -1, -1));
+        jLabel9.setText("Id Planos de Cursos :");
+        getContentPane().add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(630, 140, -1, -1));
 
         jLabel10.setForeground(new java.awt.Color(255, 255, 255));
         jLabel10.setText("PPC Cursado");
-        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(309, 10, -1, -1));
+        getContentPane().add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(240, 30, 80, -1));
 
         jLabel11.setForeground(new java.awt.Color(255, 255, 255));
         jLabel11.setText("PPC a Cursar");
-        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(828, 6, -1, -1));
+        getContentPane().add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(870, 30, -1, -1));
 
         txtIdArea1.setEnabled(false);
-        getContentPane().add(txtIdArea1, new org.netbeans.lib.awtextra.AbsoluteConstraints(754, 32, 43, -1));
+        getContentPane().add(txtIdArea1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 60, 40, -1));
 
         txtIdCurso1.setEnabled(false);
-        getContentPane().add(txtIdCurso1, new org.netbeans.lib.awtextra.AbsoluteConstraints(754, 72, 43, -1));
+        getContentPane().add(txtIdCurso1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 100, 40, -1));
 
         txtIdPpc1.setEnabled(false);
         txtIdPpc1.addActionListener(new java.awt.event.ActionListener() {
@@ -517,7 +564,7 @@ public class TelaEquivalencia extends javax.swing.JFrame {
                 txtIdPpc1ActionPerformed(evt);
             }
         });
-        getContentPane().add(txtIdPpc1, new org.netbeans.lib.awtextra.AbsoluteConstraints(754, 112, 43, -1));
+        getContentPane().add(txtIdPpc1, new org.netbeans.lib.awtextra.AbsoluteConstraints(760, 140, 40, -1));
 
         jButton2.setText("Listar PPC");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -525,12 +572,17 @@ public class TelaEquivalencia extends javax.swing.JFrame {
                 jButton2ActionPerformed(evt);
             }
         });
-        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 160, -1, 20));
+        getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 190, -1, -1));
         getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(1170, 40, 40, 670));
         getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 740, 1150, 30));
 
         jButton3.setText("Listar PCC");
-        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 160, -1, -1));
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        getContentPane().add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(860, 190, -1, -1));
 
         getAccessibleContext().setAccessibleDescription("");
 
@@ -550,10 +602,6 @@ public class TelaEquivalencia extends javax.swing.JFrame {
    
     }//GEN-LAST:event_tblDisciplinasMouseClicked
 
-    private void cboCursoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboCursoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cboCursoActionPerformed
-
     private void txtIdAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtIdAreaActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdAreaActionPerformed
@@ -562,13 +610,42 @@ public class TelaEquivalencia extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtIdPpc1ActionPerformed
 
-    private void cboAreaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cboAreaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cboAreaActionPerformed
-
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        listar_disciplinas();
+        pesquisar_area1();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        listar_disciplinas1();
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+       compararListas();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void cboAreaFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cboAreaFocusLost
+        setar_id_area();
+    }//GEN-LAST:event_cboAreaFocusLost
+
+    private void cboCursoFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cboCursoFocusLost
+        setar_id_curso();
+    }//GEN-LAST:event_cboCursoFocusLost
+
+    private void cboPpcFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cboPpcFocusLost
+        setar_id_ppc();
+    }//GEN-LAST:event_cboPpcFocusLost
+
+    private void cboArea1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cboArea1FocusLost
+        setar_id_area1();
+    }//GEN-LAST:event_cboArea1FocusLost
+
+    private void cboCurso1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cboCurso1FocusLost
+        setar_id_curso1();
+    }//GEN-LAST:event_cboCurso1FocusLost
+
+    private void cboPpc1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_cboPpc1FocusLost
+        setar_id_ppc1();
+    }//GEN-LAST:event_cboPpc1FocusLost
 
     /**
      * @param args the command line arguments

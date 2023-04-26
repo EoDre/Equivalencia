@@ -168,6 +168,11 @@ public class TelaPrincipal extends javax.swing.JFrame {
         menEquivalencia.setIcon(new javax.swing.ImageIcon(getClass().getResource("/br/com/equivalencia/imagens/equivalencia-icon.png"))); // NOI18N
         menEquivalencia.setText("Realizar Equivalência");
         menEquivalencia.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        menEquivalencia.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menEquivalenciaActionPerformed(evt);
+            }
+        });
         menEquiv.add(menEquivalencia);
 
         menPrincipal.add(menEquiv);
@@ -324,6 +329,12 @@ public class TelaPrincipal extends javax.swing.JFrame {
         TelaCursos curso = new TelaCursos();
         curso.setVisible(true);
     }//GEN-LAST:event_jMenuItem2ActionPerformed
+
+    private void menEquivalenciaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menEquivalenciaActionPerformed
+        this.dispose();
+        TelaEquivalencia equivalencia = new TelaEquivalencia();
+        equivalencia.setVisible(true);
+    }//GEN-LAST:event_menEquivalenciaActionPerformed
 
     /**
      * @param args the command line arguments

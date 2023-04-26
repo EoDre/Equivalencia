@@ -33,7 +33,7 @@ public class TelaUsuario extends javax.swing.JFrame {
             pst.setString(2,txtCpf.getText());
             pst.setString(3,txtLogin.getText());
             pst.setString(4,txtSenha.getText());
-            pst.setString(5,cmoPerfil.getSelectedItem().toString());
+            pst.setString(5,cboPerfil.getSelectedItem().toString());
             
             
             if((txtNomeUsuario.getText().isEmpty()) || (txtCpf.getText().isEmpty()) || (txtLogin.getText().isEmpty()) || (txtSenha.getText().isEmpty())){
@@ -53,7 +53,7 @@ public class TelaUsuario extends javax.swing.JFrame {
         }
     }
      private void consultar() {
-        String sql = "select id as 'ID Usuário', nome as 'Nome Usuário', fone as 'Cpf Usuário', login as Login, senha as Senha, perfil as Perfil from tb_usuarios where nome like?";
+        String sql = "select id as 'ID Usuário', nome as 'Nome Usuário', fone as 'fone Usuário', login as Login, senha as Senha, perfil as Perfil from tb_usuarios where nome like?";
 
         try {
             pst = conexao.prepareStatement(sql);
@@ -66,7 +66,7 @@ public class TelaUsuario extends javax.swing.JFrame {
         }
     }
     private void alterar(){
-    String sql="update tb_usuarios set nome=?, cpf=?, login=?,senha=sha2(?,512), perfil=? where id=?";
+    String sql="update tb_usuarios set nome=?, fone=?, login=?,senha=sha2(?,512), perfil=? where id=?";
     
         try {
             pst=conexao.prepareStatement(sql);
@@ -75,7 +75,7 @@ public class TelaUsuario extends javax.swing.JFrame {
             pst.setString(2,txtCpf.getText());
             pst.setString(3,txtLogin.getText());
             pst.setString(4,txtSenha.getText());
-            pst.setString(5,cmoPerfil.getSelectedItem().toString());
+            pst.setString(5,cboPerfil.getSelectedItem().toString());
             pst.setString(6,txtIdUsuario.getText());
 
             // validação dos campos obrigatórios
@@ -131,7 +131,8 @@ public class TelaUsuario extends javax.swing.JFrame {
     txtNomeUsuario.setText(tblUsuarioConsulta.getModel().getValueAt(setar,1).toString());
     txtCpf.setText(tblUsuarioConsulta.getModel().getValueAt(setar,2).toString());
     txtLogin.setText(tblUsuarioConsulta.getModel().getValueAt(setar,3).toString());
-    txtSenha.setText(tblUsuarioConsulta.getModel().getValueAt(setar,4).toString());
+    
+    
     btnAdicionarArea.setEnabled(false);
     btnEditarArea.setEnabled(true);
     btnExcluirArea.setEnabled(true);
@@ -182,7 +183,7 @@ public class TelaUsuario extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        cmoPerfil = new javax.swing.JComboBox<>();
+        cboPerfil = new javax.swing.JComboBox<>();
         jLabel7 = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
         txtSenha = new javax.swing.JPasswordField();
@@ -350,9 +351,9 @@ public class TelaUsuario extends javax.swing.JFrame {
         jLabel6.setText("Senha");
         getContentPane().add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, -1, 22));
 
-        cmoPerfil.setForeground(new java.awt.Color(255, 255, 255));
-        cmoPerfil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Usuario", "Admin", " " }));
-        getContentPane().add(cmoPerfil, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 105, -1));
+        cboPerfil.setForeground(new java.awt.Color(255, 255, 255));
+        cboPerfil.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Usuario", "Admin", " " }));
+        getContentPane().add(cboPerfil, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 260, 105, -1));
 
         jLabel7.setForeground(new java.awt.Color(255, 255, 255));
         jLabel7.setText("Perfil");
@@ -498,7 +499,7 @@ public class TelaUsuario extends javax.swing.JFrame {
     private javax.swing.JButton btnEditarArea;
     private javax.swing.JButton btnExcluirArea;
     private javax.swing.JButton btnVoltar;
-    private javax.swing.JComboBox<String> cmoPerfil;
+    private javax.swing.JComboBox<String> cboPerfil;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
